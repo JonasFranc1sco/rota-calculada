@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rota calculada</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css')}}">
+</head>
+<body>
+    <div id="container">
+        <div id="painel-controle">
+            <form id="form-viagem">
+                <h1>Rota calculada</h1>
+
+                <div class="grupo-formulario">
+                    <label for="origem">📍 Ponto de partida:</label>
+                    <input type="text" id="autocomplete-origem" name="origem_texto" placeholder="Digite um endereço ou local" class="campo-de-texto" required>
+                    <input type="hidden" id="origem_place_id" name="origem_place_id">
+                </div>
+
+                <div class="grupo-formulario">
+                    <label for="destino">🏁 Ponto de destino:</label>
+                    <input type="text" id="autocomplete-destino" name="destino_texto" placeholder="Digite um endereço ou local" class="campo-de-texto" required>
+                    <input type="hidden" id="destino_place_id" name="destino_place_id">
+                </div>
+
+                <div class="grupo-formulario">
+                    <label for="preco_gasolina">💲 Preço do litro (R$):</label>
+                    <input type="number" step="0.01" id="preco_gasolina" name="preco_gasolina" class="campo-de-texto" required>
+                </div>
+                
+                <div class="grupo-formulario">
+                    <label for="consumo_veiculo">🚗 Consumo (km/l):</label>
+                    <input type="number" step="0.1" id="consumo_veiculo" name="consumo_veiculo" class="campo-de-texto" required>
+                </div>
+
+                <button type="submit">Calcular Rota</button>
+            </form> 
+        
+            <div id="area-resultados" class="escondido">
+                <h2>Resultados</h2>
+                <p><strong>Distância:</strong> <span id="resultado-distancia"></span></p>
+                <p><strong>Custo: R$</strong> <span id="resultado-custo"></span></p>
+            </div>
+        </div>
+
+        <div id="map"></div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=SUA_API_AQUI&libraries=places,routes&v=beta&callback=initApp" async defer></script>
+</body>
+
+</html>
