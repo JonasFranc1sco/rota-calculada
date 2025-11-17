@@ -1,4 +1,4 @@
-# Route Cost Calculator
+# CAlculate RouTe
 
 A Flask-based web application that calculates the estimated fuel cost for a trip. It uses the **Google Maps API** to determine the precise distance between two locations and computes the cost based on the user's vehicle consumption and current fuel prices.
 
