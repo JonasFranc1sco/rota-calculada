@@ -32,8 +32,8 @@ Before running this project, ensure you have the following:
 
 1.  **Clone the repository:**
     ```bash
-    git clone https://github.com/JonasFranc1sco/calculated.git
-    cd calculated
+    git clone https://github.com/JonasFranc1sco/CART.git
+    cd CART
     ```
 
 2.  **Create a virtual environment (Optional but recommended):**
