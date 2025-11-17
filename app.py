@@ -6,51 +6,50 @@ load_dotenv()
 
 app = Flask(__name__)
 
-API_KEY = "GOOGLE_API_KEY" # Troque pelo nome da sua API Key definida no .env
+API_KEY = "API_MAPS_HERE" # Change for the name of your API Key from .env file
 
 gmaps = googlemaps.Client(key=API_KEY)
 
 @app.route('/')
-def pagina_inicial():
+def initial_page():
     
     return render_template("index.html")
 
 
-@app.route('/calcular', methods=['POST'])
-def calcular_rota():
+@app.route('/calculate', methods=['POST'])
+def calculate_route():
     try:
         data = request.get_json()
-        origem_place_id = data['origem_place_id']
-        destino_place_id = data['destino_place_id']
+        origin_place_id = data['origin_place_id']
+        destination_place_id = data['destination_place_id']
         
-        preco_gasolina = float(data['preco_gasolina'])
-        consumo_veiculo = float(data['consumo_veiculo'])
+        fuel_price = float(data['fuel_price'])
+        vehicle_consum = float(data['vehicle_consum'])
         
-        if not origem_place_id or not destino_place_id:
-            return jsonify({"status": "ERRO", "mensagem": "Por favor, selecione uma origem e destino da lista."}), 400
+        if not origin_place_id or not destination_place_id:
+            return jsonify({"status": "ERRO", "message": "Please, select a origin and destiny from the list."}), 400
         
-        resultado_direcoes = gmaps.directions(f"place_id:{origem_place_id}",
-                                              f"place_id:{destino_place_id}",
+        direction_result = gmaps.directions(f"place_id:{origin_place_id}",
+                                              f"place_id:{destination_place_id}",
                                               mode="driving",
-                                              language="pt-BR")
+                                              language="en-us")
         
-        if not resultado_direcoes:
-            return jsonify({"status": "ERRO", "mensagem": "Não foi possível encontrar uma rota para os locais selecionados."}), 400
+        if not direction_result:
+            return jsonify({"status": "ERRO", "message": "No route could be found for the selected locations."}), 400
         
-        rota = resultado_direcoes[0]['legs'][0]
-        distancia_em_metros = rota['distance']['value']
-        distancia_texto = rota['distance']['text']
+        route = direction_result[0]['legs'][0]
+        meter_distance = route['distance']['value']
+        distance_text = route['distance']['text']
+        km_distance = meter_distance / 1000
+        liter_consum = km_distance / vehicle_consum
+        total_cost = liter_consum * fuel_price
         
-        distancia_em_km = distancia_em_metros / 1000
-        litros_necessarios = distancia_em_km / consumo_veiculo
-        custo_total = litros_necessarios * preco_gasolina
-        
-        resultado = {
+        result = {
             "status":"OK",
-            "distancia_texto": distancia_texto,
-            "custo_total": f"{custo_total:.2f}",
+            "distance_text": distance_text,
+            "total_cost": f"{total_cost:.2f}",
         }
-        return jsonify(resultado)
+        return jsonify(result)
         
     except Exception as e:
         return jsonify({"status": "ERRO", "mensagem": str(e)}), 500

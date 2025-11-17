@@ -4,87 +4,86 @@ document.addEventListener('DOMContentLoaded', function() {
 
     window.initApp = function() {
         
-        // 1. Inicializa o mapa
+        // 1. Initialize maps
         map = new google.maps.Map(document.getElementById("map"), {
             center: { lat: -8.7619, lng: -63.9039 },
             zoom: 5,
         });
 
-        // 2. Inicializa o renderizador de rotas
+        // 2. Initialize router render
         directionsRenderer = new google.maps.DirectionsRenderer();
         directionsRenderer.setMap(map);
 
-        // 3. Pega elementos
-        const inputOrigem = document.getElementById('autocomplete-origem');
-        const inputDestino = document.getElementById('autocomplete-destino');
-        const hiddenOrigem = document.getElementById('origem_place_id');
-        const hiddenDestino = document.getElementById('destino_place_id');
-        const form = document.getElementById('form-viagem');
+        // 3. Catch elements
+        const originInput = document.getElementById('autocomplete-origin');
+        const destinationInput = document.getElementById('autocomplete-destination');
+        const originHidden = document.getElementById('origin_place_id');
+        const destinationHidden = document.getElementById('destination_place_id');
+        const form = document.getElementById('form-route');
 
-        // 4. Cria os autocompletes usando a API
-        const autocompleteOrigem = new google.maps.places.Autocomplete(inputOrigem);
-        const autocompleteDestino = new google.maps.places.Autocomplete(inputDestino);
+        // 4. Create autocomplete using Google API
+        const autocompleteOrigin = new google.maps.places.Autocomplete(originInput);
+        const autocompleteDestination = new google.maps.places.Autocomplete(destinationInput);
 
-        autocompleteOrigem.addListener('place_changed', () => {
-            const place = autocompleteOrigem.getPlace();
+        autocompleteOrigin.addListener('place_changed', () => {
+            const place = autocompleteOrigin.getPlace();
             if (place && place.place_id) {
-                hiddenOrigem.value = place.place_id;
-                console.log("ORIGEM PLACE_ID CAPTURADO:", place.place_id);
+                originHidden.value = place.place_id;
+                console.log("ORIGIN PLACE_ID CATCHED:", place.place_id);
             } else {
-                console.warn("NÃO CAPTUROU PLACE_ID DA ORIGEM");
+                console.warn("DON'T CATCH PLACE_ID FROM ORIGIN");
             }
         });
 
-        autocompleteDestino.addListener('place_changed', () => {
-            const place = autocompleteDestino.getPlace();
+        autocompleteDestination.addListener('place_changed', () => {
+            const place = autocompleteDestination.getPlace();
             if (place && place.place_id) {
-                hiddenDestino.value = place.place_id;
-                console.log("DESTINO PLACE_ID CAPTURADO:", place.place_id);
+                destinationHidden.value = place.place_id;
+                console.log("DESTINO PLACE_ID CATCHED:", place.place_id);
             } else {
-                console.warn("NÃO CAPTUROU PLACE_ID DO DESTINO");
+                console.warn("DON'T CATCH PLACE_ID FROM DESTINATION");
             }
         });
 
-        // 5. Envio do formulário
+        // 5. Send form
         form.addEventListener('submit', function(event) {
             event.preventDefault();
 
             const data = Object.fromEntries(new FormData(form).entries());
-            console.log("DADOS ENVIADOS:", data);
+            console.log("SENDED DATA:", data);
 
-            fetch('/calcular', {
+            fetch('/calculate', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
             })
             .then(response => response.json())
-            .then(resultado => {
-                console.log("RESPOSTA SERVIDOR:", resultado);
+            .then(result => {
+                console.log("SERVER RESPONSE:", result);
 
-                if (resultado.status === "OK") {
+                if (result.status === "OK") {
                     const directionsService = new google.maps.DirectionsService();
                     directionsService.route({
-                        origin: { placeId: data.origem_place_id },
-                        destination: { placeId: data.destino_place_id },
+                        origin: { placeId: data.origin_place_id },
+                        destination: { placeId: data.destination_place_id },
                         travelMode: 'DRIVING'
                     }, (result, status) => {
                         if (status === 'OK') {
                             directionsRenderer.setDirections(result);
                         } else {
-                            console.error("Erro ao desenhar rota:", status);
+                            console.error("Error to draw route:", status);
                         }
                     });
-
-                    document.getElementById('resultado-distancia').textContent = resultado.distancia_texto;
-                    document.getElementById('resultado-custo').textContent = resultado.custo_total;
-                    document.getElementById('area-resultados').classList.remove('escondido');
+                    document.getElementById('distance-result').textContent = result.distance_text;
+                    document.getElementById('result-cost').textContent = result.total_cost;
+                    document.getElementById('area-results').classList.remove('hidden');
                 } else {
-                    alert("Erro do servidor: " + resultado.mensagem);
+                    alert("Server error: " + result.message);
                 }
             })
             .catch(err => {
-                console.error("Erro no fetch:", err);
-                alert("Erro ao conectar com o servidor Flask.");
+                console.error("Fetch error:", err);
+                alert("Error to conect with Flask Server.");
             });
         });
     };

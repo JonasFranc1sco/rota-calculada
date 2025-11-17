@@ -13,7 +13,7 @@ html, body {
 }
 
 /* Painel de controle do lado esquerdo */
-#painel-controle {
+#control-panel {
     width: 400px;
     background-color: #1a1a1a;
     padding: 20px;
@@ -28,7 +28,7 @@ html, body {
 }
 
 /* Um toque no formulário */
-#form-viagem {
+#form-route{
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -54,4 +54,8 @@ button {
 
 button:hover {
     background: #1b5c24;
+}
+
+.hidden {
+    display: none;
 }
